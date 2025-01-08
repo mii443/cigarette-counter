@@ -46,12 +46,24 @@ pub struct Database {
 }
 
 impl Database {
+    /// Creates a new Database instance.
+    ///
+    /// # Arguments
+    /// * `pool` - The PostgreSQL connection pool.
     pub fn new(pool: PgPool) -> Self {
         Self {
             pool: Arc::new(pool),
         }
     }
 
+    /// Creates a new user in the database.
+    ///
+    /// # Arguments
+    /// * `discord_id` - The Discord ID of the user.
+    /// * `username` - The username of the user.
+    ///
+    /// # Returns
+    /// A Result containing the created `User` or an `Error`.
     pub async fn create_user(&self, discord_id: &str, username: &str) -> Result<User, Error> {
         let user = sqlx::query_as!(
             User,
@@ -73,6 +85,14 @@ impl Database {
         Ok(user)
     }
 
+    /// Gets an existing user or creates a new one if it doesn't exist.
+    ///
+    /// # Arguments
+    /// * `discord_id` - The Discord ID of the user.
+    /// * `username` - The username of the user.
+    ///
+    /// # Returns
+    /// A Result containing the `User` or an `Error`.
     pub async fn get_or_create_user(
         &self,
         discord_id: &str,
@@ -145,6 +165,13 @@ impl Database {
         Ok(user)
     }
 
+    /// Checks if a user exists in the database.
+    ///
+    /// # Arguments
+    /// * `discord_id` - The Discord ID of the user.
+    ///
+    /// # Returns
+    /// A Result containing a boolean indicating whether the user exists or an `Error`.
     pub async fn user_exists(&self, discord_id: &str) -> Result<bool, Error> {
         let exists = sqlx::query_scalar!(
             r#"
@@ -158,6 +185,15 @@ impl Database {
         Ok(exists)
     }
 
+    /// Logs a smoking event.
+    ///
+    /// # Arguments
+    /// * `discord_id` - The Discord ID of the user.
+    /// * `smoking_type_id` - The ID of the smoking type.
+    /// * `quantity` - The quantity of cigarettes smoked.
+    ///
+    /// # Returns
+    /// A Result containing the logged `SmokingLog` or an `Error`.
     pub async fn log_smoking(
         &self,
         discord_id: &str,
@@ -191,6 +227,14 @@ impl Database {
         Ok(log)
     }
 
+    /// Retrieves the daily smoking summary for a user.
+    ///
+    /// # Arguments
+    /// * `discord_id` - The Discord ID of the user.
+    /// * `date` - The date for which to retrieve the summary.
+    ///
+    /// # Returns
+    /// A Result containing a vector of `DailySmokingSummary` or an `Error`.
     pub async fn get_daily_summary(
         &self,
         discord_id: &str,
@@ -227,6 +271,13 @@ impl Database {
         Ok(summary)
     }
 
+    /// Retrieves a smoking type by its ID.
+    ///
+    /// # Arguments
+    /// * `id` - The ID of the smoking type.
+    ///
+    /// # Returns
+    /// A Result containing the `SmokingType` or an `Error`.
     pub async fn get_smoking_type(&self, id: i32) -> Result<SmokingType, Error> {
         let smoking_type = sqlx::query_as!(
             SmokingType,
@@ -247,6 +298,10 @@ impl Database {
         Ok(smoking_type)
     }
 
+    /// Retrieves all smoking types.
+    ///
+    /// # Returns
+    /// A Result containing a vector of `SmokingType` or an `Error`.
     pub async fn get_smoking_types(&self) -> Result<Vec<SmokingType>, Error> {
         let types = sqlx::query_as!(
             SmokingType,
@@ -266,6 +321,13 @@ impl Database {
         Ok(types)
     }
 
+    /// Checks if a smoking type exists in the database.
+    ///
+    /// # Arguments
+    /// * `id` - The ID of the smoking type.
+    ///
+    /// # Returns
+    /// A Result containing a boolean indicating whether the smoking type exists or an `Error`.
     pub async fn smoking_type_exists(&self, id: i32) -> Result<bool, Error> {
         let exists = sqlx::query_scalar!(
             r#"

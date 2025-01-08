@@ -8,6 +8,16 @@ pub struct Config {
 }
 
 impl Config {
+    /// Loads configuration from environment variables
+    ///
+    /// # Returns
+    /// - `Ok(Config)` if all required environment variables are present
+    /// - `Err(ConfigError)` if any required environment variables are missing
+    ///
+    /// # Environment Variables
+    /// - `BOT_TOKEN`: Required, bot authentication token
+    /// - `DATABASE_URL`: Required, database connection string
+    /// - `COMMAND_PREFIX`: Optional, defaults to "c:"
     pub fn load() -> Result<Self, ConfigError> {
         Ok(Self {
             bot_token: env::var("BOT_TOKEN").map_err(|_| ConfigError::MissingBotToken)?,
